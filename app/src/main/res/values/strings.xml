@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">FitCheck</string>
+    <string name="welcome_back">Chào bạn trở lại!</string>
+    <string name="your_bmi">BMI CỦA BẠN</string>
+    <string name="what_to_eat">Hôm nay ăn gì?</string>
+    <string name="slogan_main">Hiểu cơ thể, khỏe mỗi ngày.</string>
+    <string name="slogan_sub">Thói quen nhỏ. Thay đổi bền lâu.</string>
+    <string name="footer_text">Đồng hành cùng sức khỏe của bạn</string>
+    <!-- Màn hình Đăng nhập -->
+    <string name="login_title">Chào bạn trở lại!</string>
+    <string name="login_subtitle">Tiếp tục hành trình khỏe mạnh của bạn.</string>
+    <string name="label_email">Email</string>
+    <string name="hint_email">minhanh@gmail.com</string>
+    <string name="label_password">Mật khẩu</string>
+    <string name="hint_password">••••••••••</string>
+    <string name="action_forgot_password">Quên mật khẩu?</string>
+    <string name="btn_login">Đăng nhập</string>
+    <string name="text_or">hoặc</string>
+    <string name="btn_login_google">Tiếp tục với Google</string>
+    <string name="text_no_account">Chưa có tài khoản? Đăng ký</string>
+    <string name="footer_privacy">Dữ liệu sức khỏe của bạn luôn là riêng tư.</string>
+    <!-- Màn hình Đăng ký -->
+    <string name="title_register">Đăng ký</string>
+    <string name="register_heading">Bắt đầu sống khỏe</string>
+    <string name="register_subheading">Tạo tài khoản để lưu chỉ số và theo dõi sự tiến bộ của riêng bạn.</string>
+    <string name="label_fullname">Họ và tên</string>
+    <string name="hint_fullname">Nhập họ và tên</string>
+    <string name="hint_email_generic">Nhập địa chỉ email</string>
+    <string name="hint_password_generic">Nhập mật khẩu</string>
+    <string name="password_rule">Ít nhất 8 ký tự, gồm chữ và số.</string>
+    <string name="label_confirm_password">Xác nhận mật khẩu</string>
+    <string name="checkbox_terms">Tôi đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của FitCheck.</string>
+    <string name="btn_create_account">Tạo tài khoản</string>
+    <string name="text_has_account">Đã có tài khoản? Đăng nhập</string>
+    <string name="disclaimer_age">FitCheck dành cho người từ 18 tuổi. Các chỉ số chỉ mang tính tham khảo sức khỏe.</string>
+    <!-- Màn hình Lịch sử cân nặng -->
+    <string name="title_weight">Cân nặng</string>
+    <string name="tab_history">Lịch sử</string>
+    <string name="tab_chart">Biểu đồ</string>
+    <string name="label_latest_weight">CÂN NẶNG GẦN NHẤT</string>
+    <string name="weight_stats_sub">5,60 kg ↓ 1,2 kg trong 4 tuần</string> <!-- Sửa theo số liệu thực tế -->
+    <string name="section_date_range">Tháng 11 – Tháng 10</string>
+    <string name="record_count">5 bản ghi</string>
+    <string name="btn_add_weight">+ Thêm cân nặng</string>
+    <string name="hint_tap_to_manage">Chạm bản ghi để xem • Bút để sửa • Thùng rác để xóa</string>
+</resources>
