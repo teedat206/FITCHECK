@@ -265,21 +265,37 @@
                     android:orientation="horizontal"
                     android:padding="4dp">
 
-                    <TextView
-                        android:id="@+id/btnNam"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Nam"
-                        android:textColor="#6B7280"
-                        android:textSize="14sp" />
-
+                    <!-- Nút Nam -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnNu"
+                        android:id="@+id/cardNam"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="#F3F4F6"
+                        app:cardCornerRadius="21dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+
+                        <TextView
+                            android:id="@+id/tvNam"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="Nam"
+                            android:textColor="#6B7280"
+                            android:textSize="14sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Nút Nữ -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardNu"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:cardBackgroundColor="#FFFFFF"
                         app:cardCornerRadius="21dp"
                         app:cardElevation="2dp"
@@ -287,6 +303,7 @@
                         app:strokeWidth="1dp">
 
                         <TextView
+                            android:id="@+id/tvNu"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"

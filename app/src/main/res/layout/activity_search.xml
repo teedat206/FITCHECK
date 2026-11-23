@@ -320,123 +320,21 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Kết quả 1: Cơm gạo lứt, gà & rau củ -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
+            android:id="@+id/tvEmptyResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="#E5E7EB"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:text="Không tìm thấy kết quả phù hợp"
+            android:textColor="#6B7280"
+            android:textSize="15sp"
+            android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="14dp">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:contentDescription="Biểu tượng món ăn"
-                    android:src="@drawable/ic_goiyy"
-                    app:tint="#1B6B45" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cơm gạo lứt, gà &amp; rau củ"
-                        android:textColor="#111827"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="550 kcal · 25 phút · Giữ cân"
-                        android:textColor="#6B7280"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:contentDescription="Xem chi tiết"
-                    android:src="@drawable/ic_chevron_right"
-                    app:tint="#6B7280" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Kết quả 2: Bún gà rau xanh -->
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
+            android:id="@+id/layoutResultsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="#E5E7EB"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="14dp">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:contentDescription="Biểu tượng món ăn"
-                    android:src="@drawable/ic_goiyy"
-                    app:tint="#1B6B45" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Bún gà rau xanh"
-                        android:textColor="#111827"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="450 kcal · 25 phút · Giữ cân"
-                        android:textColor="#6B7280"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:contentDescription="Xem chi tiết"
-                    android:src="@drawable/ic_chevron_right"
-                    app:tint="#6B7280" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
+            android:orientation="vertical" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -50,8 +50,6 @@ class WeightHistoryActivity : AppCompatActivity() {
 
         // 2. Lắng nghe dữ liệu realtime từ Room Database qua ViewModel
         viewModel.allWeights.observe(this) { list ->
-            // Bỏ qua trạng thái Loading thực tế bằng delay hoặc giả lập vì flow emit rất nhanh.
-            // Ở đây áp dụng hiển thị dữ liệu hoặc Empty
             if (list.isEmpty()) {
                 findViewById<android.view.View>(R.id.groupData).visibility = android.view.View.GONE
                 findViewById<android.view.View>(R.id.layoutEmpty).visibility = android.view.View.VISIBLE
@@ -71,6 +69,32 @@ class WeightHistoryActivity : AppCompatActivity() {
                 
                 // Cập nhật số lượng bản ghi
                 tvRecordCount.text = "${list.size} bản ghi"
+                
+                // Cập nhật tiêu đề tháng động
+                val months = list.mapNotNull {
+                    try {
+                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(it.date)?.let { d ->
+                            SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(d)
+                        }
+                    } catch (e: Exception) { null }
+                }.distinct()
+                
+                if (months.isNotEmpty()) {
+                    val monthTitle = if (months.size == 1) {
+                        "Tháng ${months.first()}"
+                    } else {
+                        "Tháng ${months.first()} – Tháng ${months.last()}"
+                    }
+                    findViewById<TextView>(R.id.tvSectionTitle)?.text = monthTitle
+                }
+                
+                if (latest != null && list.isNotEmpty()) {
+                    val diff = latest.weight - list.last().weight
+                    val roundedDiff = (diff * 10).roundToInt() / 10f
+                    val diffPrefix = if (roundedDiff > 0) "↑" else if (roundedDiff < 0) "↓" else ""
+                    val diffText = "$diffPrefix ${Math.abs(roundedDiff)} kg"
+                    findViewById<TextView>(R.id.tvWeightDiff)?.text = diffText
+                }
             }
         }
 
@@ -79,16 +103,35 @@ class WeightHistoryActivity : AppCompatActivity() {
             showWeightDialog(null)
         }
         
-        findViewById<android.view.View>(R.id.btnAddFirstWeight).setOnClickListener {
+        findViewById<android.view.View>(R.id.btnAddFirstWeight)?.setOnClickListener {
             showWeightDialog(null)
         }
 
-        findViewById<android.view.View>(R.id.tvTabChart).setOnClickListener {
-            // Chuyển sang WeightChartActivity
+        findViewById<android.view.View>(R.id.tvTabChart)?.setOnClickListener {
             val intent = android.content.Intent(this, WeightChartActivity::class.java)
             intent.flags = android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
             startActivity(intent)
             overridePendingTransition(0, 0)
+        }
+
+        // Nút Lịch chọn ngày
+        val calendarClick = android.view.View.OnClickListener {
+            val c = Calendar.getInstance()
+            android.app.DatePickerDialog(this, { _, year, month, dayOfMonth ->
+                val selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year)
+                val filtered = (viewModel.allWeights.value ?: emptyList()).filter { it.date == selectedDate }
+                if (filtered.isEmpty()) {
+                    Toast.makeText(this, "Không có bản ghi ngày $selectedDate", Toast.LENGTH_SHORT).show()
+                } else {
+                    adapter.submitList(filtered)
+                    Toast.makeText(this, "Đang xem ngày $selectedDate (Nhấn Lịch lại để reset)", Toast.LENGTH_SHORT).show()
+                }
+            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
+        }
+        findViewById<android.view.View>(R.id.ivCalendar)?.setOnClickListener(calendarClick)
+
+        if (intent.getBooleanExtra("OPEN_ADD_DIALOG", false)) {
+            showWeightDialog(null)
         }
 
         BottomNavHelper.setupBottomNav(this)

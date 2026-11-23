@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_green">#1F6B4A</color> <!-- Xanh chính -->
-    <color name="mint_green">#DDEFE3</color> <!-- Xanh mint -->
-    <color name="bg_light">#F4F8F4</color> <!-- Nền màn hình -->
-    <color name="text_primary">#1B2620</color> <!-- Chữ chính -->
+    <color name="primary_green">#1F6B4A</color>
+    <color name="mint_green">#DDEFE3</color>
+    <color name="bg_light">#F4F8F4</color>
+    <color name="bg_main">#F7FAF8</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="text_primary">#1B2620</color>
+    <color name="text_secondary">#6B7280</color>
 </resources>

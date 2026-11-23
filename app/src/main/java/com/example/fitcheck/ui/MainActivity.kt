@@ -1,6 +1,9 @@
 package com.example.fitcheck.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,9 +21,18 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Chuyển sang màn hình Login sau 2 giây (Splash Screen logic)
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            val intent = android.content.Intent(this, LoginActivity::class.java)
+        Handler(Looper.getMainLooper()).postDelayed({
+            val isLoggedIn = AppPreferences.isLoggedIn(this)
+            val hasCompleted = AppPreferences.hasCompletedProfile(this)
+
+            val intent = if (!isLoggedIn) {
+                Intent(this, LoginActivity::class.java)
+            } else if (!hasCompleted) {
+                Intent(this, ProfileActivity::class.java)
+            } else {
+                Intent(this, HomeActivity::class.java)
+            }
+            
             startActivity(intent)
             finish()
         }, 2000)

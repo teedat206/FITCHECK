@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAF7"
+    android:background="@color/bg_main"
     tools:context=".ui.WeightHistoryActivity">
 
     <!-- Header: Tiêu đề & Icon lịch -->
@@ -227,6 +227,7 @@
 
         <!-- Tab 1: Trang chủ -->
         <LinearLayout
+            android:id="@+id/navHome"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -247,6 +248,7 @@
 
         <!-- Tab 2: Cân nặng (Đang chọn - có nền bo tròn mint) -->
         <LinearLayout
+            android:id="@+id/navWeight"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -277,6 +279,7 @@
 
         <!-- Tab 3: Gợi ý -->
         <LinearLayout
+            android:id="@+id/navSuggest"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -297,6 +300,7 @@
 
         <!-- Tab 4: Hồ sơ -->
         <LinearLayout
+            android:id="@+id/navProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
