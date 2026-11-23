@@ -44,6 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTitleWeight">
 
         <TextView
+            android:id="@+id/tvTabHistory"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -54,6 +55,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvTabChart"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -157,6 +159,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvSectionTitle" />
 
+    <!-- Nhóm hiển thị Data -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="cardLatest,tvSectionTitle,tvRecordCount,rvWeightList,btnAddWeight" />
+
     <!-- RecyclerView chứa danh sách lịch sử -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvWeightList"
@@ -184,6 +193,27 @@
         android:textStyle="bold"
         app:cornerRadius="26dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation" />
+
+    <!-- Nhóm hiển thị Empty -->
+    <include
+        android:id="@+id/layoutEmpty"
+        layout="@layout/layout_weight_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/llTabs"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation" />
+
+    <!-- ProgressBar Loading -->
+    <ProgressBar
+        android:id="@+id/progressLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/llTabs"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Thanh điều hướng Bottom Navigation với tên icon mới -->
     <LinearLayout

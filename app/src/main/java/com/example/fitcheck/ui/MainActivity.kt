@@ -17,5 +17,12 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // Chuyển sang màn hình Login sau 2 giây (Splash Screen logic)
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            val intent = android.content.Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }, 2000)
     }
 }

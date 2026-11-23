@@ -282,38 +282,16 @@
                 </RelativeLayout>
 
                 <!-- Thanh khoảng kcal -->
-                <FrameLayout
+                <com.google.android.material.slider.RangeSlider
                     android:id="@+id/sliderKcal"
                     android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="4dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="10dp"
-                        android:background="#1B6B45" />
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="start|center_vertical"
-                        app:cardBackgroundColor="#1B6B45"
-                        app:cardCornerRadius="11dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="0dp" />
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="end|center_vertical"
-                        app:cardBackgroundColor="#1B6B45"
-                        app:cardCornerRadius="11dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="0dp" />
-                </FrameLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:valueFrom="0.0"
+                    android:valueTo="2000.0"
+                    app:thumbColor="#1B6B45"
+                    app:trackColorActive="#1B6B45"
+                    app:trackColorInactive="#D1D5DB" />
 
                 <!-- Nút Áp dụng bộ lọc -->
                 <com.google.android.material.button.MaterialButton

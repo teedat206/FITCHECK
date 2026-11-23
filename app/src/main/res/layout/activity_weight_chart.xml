@@ -233,127 +233,11 @@
                         android:textSize="13sp" />
 
                     <!-- KHU VỰC BIỂU ĐỒ -->
-                    <LinearLayout
+                    <com.example.fitcheck.ui.WeightLineChartView
+                        android:id="@+id/lineChart"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="24dp"
-                        android:orientation="vertical">
-
-                        <!-- Dòng 58 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="58"
-                                android:textColor="#6B7280"
-                                android:textSize="12sp" />
-                            <!-- Đã tăng độ dày lên 2dp và làm đậm màu -->
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="2dp"
-                                android:background="#9CA3AF" />
-                        </LinearLayout>
-
-                        <!-- Dòng 57 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="57"
-                                android:textColor="#6B7280"
-                                android:textSize="12sp" />
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="2dp"
-                                android:background="#9CA3AF" />
-                        </LinearLayout>
-
-                        <!-- Dòng 56 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="56"
-                                android:textColor="#6B7280"
-                                android:textSize="12sp" />
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="2dp"
-                                android:background="#9CA3AF" />
-                        </LinearLayout>
-
-                        <!-- Dòng 55 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="55"
-                                android:textColor="#6B7280"
-                                android:textSize="12sp" />
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="2dp"
-                                android:background="#9CA3AF" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Trục X Labels -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="32dp"
-                        android:orientation="horizontal"
-                        android:weightSum="3">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="08/10"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="22/10"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end"
-                            android:text="05/11"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                        android:layout_height="240dp"
+                        android:layout_marginTop="24dp" />
 
                     <!-- Chú thích (Legend) -->
                     <LinearLayout
@@ -369,10 +253,11 @@
                             android:background="#1B6B45" />
 
                         <TextView
+                            android:id="@+id/tvLegendRecordCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="Cân nặng (kg) · 5 lần ghi"
+                            android:text="Cân nặng (kg)"
                             android:textColor="#6B7280"
                             android:textSize="13sp" />
                     </LinearLayout>

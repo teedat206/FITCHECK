@@ -50,24 +50,48 @@ class WeightHistoryActivity : AppCompatActivity() {
 
         // 2. Lắng nghe dữ liệu realtime từ Room Database qua ViewModel
         viewModel.allWeights.observe(this) { list ->
-            adapter.submitList(list)
-            
-            // Cập nhật Cân nặng gần nhất
-            val latest = list.firstOrNull()
-            if (latest != null) {
-                tvLatestWeight.text = latest.weight.toString()
+            // Bỏ qua trạng thái Loading thực tế bằng delay hoặc giả lập vì flow emit rất nhanh.
+            // Ở đây áp dụng hiển thị dữ liệu hoặc Empty
+            if (list.isEmpty()) {
+                findViewById<android.view.View>(R.id.groupData).visibility = android.view.View.GONE
+                findViewById<android.view.View>(R.id.layoutEmpty).visibility = android.view.View.VISIBLE
             } else {
-                tvLatestWeight.text = "--.-"
+                findViewById<android.view.View>(R.id.groupData).visibility = android.view.View.VISIBLE
+                findViewById<android.view.View>(R.id.layoutEmpty).visibility = android.view.View.GONE
+                
+                adapter.submitList(list)
+                
+                // Cập nhật Cân nặng gần nhất
+                val latest = list.firstOrNull()
+                if (latest != null) {
+                    tvLatestWeight.text = latest.weight.toString()
+                } else {
+                    tvLatestWeight.text = "--.-"
+                }
+                
+                // Cập nhật số lượng bản ghi
+                tvRecordCount.text = "${list.size} bản ghi"
             }
-            
-            // Cập nhật số lượng bản ghi
-            tvRecordCount.text = "${list.size} bản ghi"
         }
 
-        // 3. Bấm nút Thêm cân nặng
+        // 3. Nút thêm cân nặng
         btnAddWeight.setOnClickListener {
             showWeightDialog(null)
         }
+        
+        findViewById<android.view.View>(R.id.btnAddFirstWeight).setOnClickListener {
+            showWeightDialog(null)
+        }
+
+        findViewById<android.view.View>(R.id.tvTabChart).setOnClickListener {
+            // Chuyển sang WeightChartActivity
+            val intent = android.content.Intent(this, WeightChartActivity::class.java)
+            intent.flags = android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
+
+        BottomNavHelper.setupBottomNav(this)
     }
 
     private fun showWeightDialog(recordToEdit: WeightRecord?) {
