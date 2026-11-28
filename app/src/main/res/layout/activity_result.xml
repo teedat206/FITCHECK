@@ -60,7 +60,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Minh Anh · Nữ, 24 tuổi · 160 cm · 56,0 kg"
                 android:textColor="#6B7280"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -246,10 +245,10 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/tvBmrValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="1.279"
                             android:textColor="#111827"
                             android:textSize="24sp"
                             android:textStyle="bold" />
@@ -296,10 +295,10 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/tvTdeeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="1.759"
                             android:textColor="#111827"
                             android:textSize="24sp"
                             android:textStyle="bold" />

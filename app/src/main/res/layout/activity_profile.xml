@@ -49,7 +49,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Nguyễn Minh Anh"
                 android:textColor="#111827"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -121,7 +120,7 @@
                         android:background="@null"
                         android:gravity="center_vertical"
                         android:inputType="numberDecimal"
-                        android:text="160"
+                        android:hint="160"
                         android:textColor="#111827"
                         android:textSize="16sp" />
 
@@ -165,7 +164,7 @@
                         android:background="@null"
                         android:gravity="center_vertical"
                         android:inputType="numberDecimal"
-                        android:text="56,0"
+                        android:hint="60.0"
                         android:textColor="#111827"
                         android:textSize="16sp" />
 
@@ -224,7 +223,7 @@
                         android:background="@null"
                         android:gravity="center_vertical"
                         android:inputType="number"
-                        android:text="24"
+                        android:hint="24"
                         android:textColor="#111827"
                         android:textSize="16sp" />
 
@@ -353,6 +352,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvActivityTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Vận động nhẹ"
@@ -361,6 +361,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvActivitySub"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
