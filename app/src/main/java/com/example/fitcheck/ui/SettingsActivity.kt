@@ -202,7 +202,7 @@ class SettingsActivity : AppCompatActivity() {
             var records = emptyList<com.example.fitcheck.data.WeightRecord>()
             dao.getAllWeights().collect { list ->
                 records = list
-                
+
                 if (records.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(this@SettingsActivity, "Chưa có dữ liệu để xuất", Toast.LENGTH_SHORT).show()
@@ -228,7 +228,7 @@ class SettingsActivity : AppCompatActivity() {
                     intent.putExtra(Intent.EXTRA_SUBJECT, "Lịch sử cân nặng FitCheck")
                     intent.putExtra(Intent.EXTRA_STREAM, uri)
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    
+
                     withContext(Dispatchers.Main) {
                         startActivity(Intent.createChooser(intent, "Chia sẻ dữ liệu qua"))
                     }
@@ -237,7 +237,7 @@ class SettingsActivity : AppCompatActivity() {
                         Toast.makeText(this@SettingsActivity, "Lỗi khi xuất file", Toast.LENGTH_SHORT).show()
                     }
                 }
-                
+
                 throw kotlinx.coroutines.CancellationException("Stop collecting")
             }
         }

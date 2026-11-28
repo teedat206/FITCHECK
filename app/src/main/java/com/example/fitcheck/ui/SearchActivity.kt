@@ -5,45 +5,34 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fitcheck.R
+import com.example.fitcheck.data.entity.MealEntity
+import com.example.fitcheck.viewmodel.MealFilter
+import com.example.fitcheck.viewmodel.MealViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.slider.RangeSlider
-import java.text.Normalizer
-import java.util.Locale
-import java.util.regex.Pattern
-
-data class MealItem(
-    val name: String,
-    val kcal: Int,
-    val prepMinutes: Int,
-    val goal: String
-)
 
 class SearchActivity : AppCompatActivity() {
 
-    private val allMeals = listOf(
-        MealItem("Cơm gạo lứt, gà & rau củ", 550, 25, "Giữ cân"),
-        MealItem("Bún gà rau xanh", 450, 15, "Giảm cân"),
-        MealItem("Salad ức gà & trứng luộc", 320, 10, "Giảm cân"),
-        MealItem("Yến mạch trái cây & hạt", 380, 5, "Giảm cân"),
-        MealItem("Sinh tố bơ chuối đạm cao", 600, 10, "Tăng cân"),
-        MealItem("Bò bít tết & khoai lang nướng", 750, 30, "Tăng cân"),
-        MealItem("Cơm tấm sườn bì chả", 850, 20, "Tăng cân"),
-        MealItem("Cá hồi áp chảo & măng tây", 520, 20, "Giữ cân"),
-        MealItem("Súp bí đỏ & bánh mì đen", 280, 15, "Giảm cân")
-    )
+    private val mealViewModel: MealViewModel by viewModels()
+
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,15 +58,49 @@ class SearchActivity : AppCompatActivity() {
         val tvResultCount = findViewById<TextView>(R.id.tvResultCount)
         val tvEmptyResult = findViewById<TextView>(R.id.tvEmptyResult)
 
-        sliderKcal?.values = listOf(200f, 900f)
+        val chipGroups = listOfNotNull(chipGroupGoal, chipGroupTime)
+
+        fun applyFilters() {
+            val query = etSearchQuery?.text.toString().trim()
+
+            val selectedGoalId = chipGroupGoal?.checkedChipId ?: View.NO_ID
+            val selectedGoal = if (selectedGoalId != View.NO_ID) {
+                findViewById<Chip>(selectedGoalId)?.text?.toString() ?: ""
+            } else ""
+
+            val selectedTimeId = chipGroupTime?.checkedChipId ?: View.NO_ID
+            val selectedTimeText = if (selectedTimeId != View.NO_ID) {
+                findViewById<Chip>(selectedTimeId)?.text?.toString()
+            } else null
+
+            val maxPrep = when {
+                selectedTimeText?.contains("15") == true -> 15
+                selectedTimeText?.contains("30") == true -> 30
+                else -> null
+            }
+
+            val minKcal = sliderKcal?.values?.get(0)?.toInt() ?: 0
+            val maxKcal = sliderKcal?.values?.get(1)?.toInt() ?: 5000
+
+            mealViewModel.setFilter(
+                MealFilter(
+                    keyword = query,
+                    goal = selectedGoal,
+                    maxPrep = maxPrep,
+                    minKcal = minKcal,
+                    maxKcal = maxKcal
+                )
+            )
+        }
+
+        sliderKcal?.values = listOf(0f, 1500f)
 
         sliderKcal?.addOnChangeListener { slider, _, _ ->
             val values = slider.values
             tvMinKcal?.text = "${values[0].toInt()} kcal"
             tvMaxKcal?.text = "${values[1].toInt()} kcal"
+            applyFilters()
         }
-
-        val chipGroups = listOfNotNull(chipGroupGoal, chipGroupTime)
 
         fun syncChipGroupStyle(chipGroup: ChipGroup) {
             for (i in 0 until chipGroup.childCount) {
@@ -100,53 +123,22 @@ class SearchActivity : AppCompatActivity() {
             syncChipGroupStyle(group)
             group.setOnCheckedStateChangeListener { _, _ ->
                 syncChipGroupStyle(group)
+                applyFilters()
             }
         }
 
-        fun String.unaccent(): String {
-            val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
-            return Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(temp).replaceAll("")
-                .lowercase(Locale.getDefault())
-        }
-
-        fun applyFilters() {
-            val query = etSearchQuery?.text.toString().trim().unaccent()
-
-            val selectedGoalId = chipGroupGoal?.checkedChipId ?: View.NO_ID
-            val selectedGoal = if (selectedGoalId != View.NO_ID) {
-                findViewById<Chip>(selectedGoalId)?.text?.toString()
-            } else null
-
-            val selectedTimeId = chipGroupTime?.checkedChipId ?: View.NO_ID
-            val selectedTimeText = if (selectedTimeId != View.NO_ID) {
-                findViewById<Chip>(selectedTimeId)?.text?.toString()
-            } else null
-
-            val minKcal = sliderKcal?.values?.get(0)?.toInt() ?: 0
-            val maxKcal = sliderKcal?.values?.get(1)?.toInt() ?: 2000
-
-            val filtered = allMeals.filter { meal ->
-                val matchesQuery = query.isEmpty() || meal.name.unaccent().contains(query)
-                val matchesGoal = selectedGoal == null || meal.goal.equals(selectedGoal, ignoreCase = true)
-                val matchesKcal = meal.kcal in minKcal..maxKcal
-                val matchesTime = when {
-                    selectedTimeText?.contains("15") == true -> meal.prepMinutes <= 15
-                    selectedTimeText?.contains("30") == true -> meal.prepMinutes <= 30
-                    else -> true
-                }
-                matchesQuery && matchesGoal && matchesKcal && matchesTime
-            }
-
+        fun renderMeals(meals: List<MealEntity>) {
             layoutResultsContainer?.removeAllViews()
 
-            if (filtered.isEmpty()) {
+            if (meals.isEmpty()) {
                 tvEmptyResult?.visibility = View.VISIBLE
+                tvEmptyResult?.text = "Không tìm thấy món ăn phù hợp"
                 tvResultCount?.text = "0 kết quả phù hợp"
             } else {
                 tvEmptyResult?.visibility = View.GONE
-                tvResultCount?.text = "${filtered.size} kết quả phù hợp"
+                tvResultCount?.text = "${meals.size} kết quả phù hợp"
 
-                filtered.forEach { meal ->
+                meals.forEach { meal ->
                     val card = MaterialCardView(this).apply {
                         radius = resources.displayMetrics.density * 16f
                         setCardBackgroundColor(Color.WHITE)
@@ -154,13 +146,13 @@ class SearchActivity : AppCompatActivity() {
                         strokeWidth = (resources.displayMetrics.density * 1f).toInt()
                         elevation = 0f
 
-                        val layoutParams = LinearLayout.LayoutParams(
+                        val lp = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                         ).apply {
                             topMargin = (resources.displayMetrics.density * 10f).toInt()
                         }
-                        this.layoutParams = layoutParams
+                        this.layoutParams = lp
 
                         val contentLayout = LinearLayout(this@SearchActivity).apply {
                             orientation = LinearLayout.HORIZONTAL
@@ -197,7 +189,7 @@ class SearchActivity : AppCompatActivity() {
                         }
 
                         val tvSub = TextView(this@SearchActivity).apply {
-                            text = "${meal.kcal} kcal · ${meal.prepMinutes} phút · ${meal.goal}"
+                            text = "${meal.calories} kcal · ${meal.prepTimeMinutes} phút · ${meal.goal}"
                             setTextColor(Color.parseColor("#6B7280"))
                             textSize = 13f
                         }
@@ -223,8 +215,12 @@ class SearchActivity : AppCompatActivity() {
                         setOnClickListener {
                             AlertDialog.Builder(this@SearchActivity)
                                 .setTitle(meal.name)
-                                .setMessage("Năng lượng: ${meal.kcal} kcal\nThời gian chuẩn bị: ${meal.prepMinutes} phút\nMục tiêu: ${meal.goal}")
-                                .setPositiveButton("Đóng", null)
+                                .setMessage("Năng lượng: ${meal.calories} kcal\nThời gian chuẩn bị: ${meal.prepTimeMinutes} phút\nMục tiêu: ${meal.goal}\nMô tả: ${meal.description}\nThành phần: ${meal.ingredients}")
+                                .setPositiveButton(if (meal.isBookmarked) "Bỏ lưu món" else "Lưu món ăn") { _, _ ->
+                                    mealViewModel.toggleBookmark(meal)
+                                    Toast.makeText(this@SearchActivity, "Đã cập nhật trạng thái lưu món", Toast.LENGTH_SHORT).show()
+                                }
+                                .setNegativeButton("Đóng", null)
                                 .show()
                         }
                     }
@@ -233,11 +229,17 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        mealViewModel.meals.observe(this) { list ->
+            renderMeals(list ?: emptyList())
+        }
+
         etSearchQuery?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 btnClearQuery?.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
-                applyFilters()
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                searchRunnable = Runnable { applyFilters() }
+                searchHandler.postDelayed(searchRunnable!!, 300)
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -252,7 +254,7 @@ class SearchActivity : AppCompatActivity() {
                 it.clearCheck()
                 syncChipGroupStyle(it)
             }
-            sliderKcal?.values = listOf(200f, 900f)
+            sliderKcal?.values = listOf(0f, 1500f)
             etSearchQuery?.text?.clear()
             applyFilters()
         }
@@ -261,7 +263,11 @@ class SearchActivity : AppCompatActivity() {
             applyFilters()
         }
 
-        // Initial apply
         applyFilters()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchRunnable?.let { searchHandler.removeCallbacks(it) }
     }
 }

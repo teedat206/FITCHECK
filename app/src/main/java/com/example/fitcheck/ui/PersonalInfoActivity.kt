@@ -7,15 +7,18 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.lifecycleScope
 import com.example.fitcheck.R
+import com.example.fitcheck.data.AppDatabase
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PersonalInfoActivity : AppCompatActivity() {
 
@@ -28,12 +31,9 @@ class PersonalInfoActivity : AppCompatActivity() {
     private var originalName = ""
     private var originalEmail = ""
     private var originalPhone = ""
-    
+
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            // Set image to avatar (not implemented directly as there is no specific ImageView for it in xml, 
-            // but normally we'd save URI and load with Glide/Picasso).
-            // tvAvatarInitials.visibility = android.view.View.GONE
             Toast.makeText(this, "Đã chọn ảnh mới", Toast.LENGTH_SHORT).show()
             enableSaveButton()
         }
@@ -54,22 +54,31 @@ class PersonalInfoActivity : AppCompatActivity() {
         etPhone = findViewById(R.id.etPhone)
         tvAvatarInitials = findViewById(R.id.tvAvatarInitials)
         btnSaveChanges = findViewById(R.id.btnSaveChanges)
-        
+
         disableSaveButton()
     }
 
     private fun loadData() {
-        originalName = AppPreferences.getUserName(this)
-        originalEmail = AppPreferences.getUserEmail(this)
-        originalPhone = AppPreferences.getUserPhone(this)
+        val userId = AppPreferences.getCurrentUserId(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = AppDatabase.getInstance(this@PersonalInfoActivity)
+            val email = AppPreferences.getUserEmail(this@PersonalInfoActivity)
+            val user = db.userDao().findByEmail(email)
 
-        etFullName.setText(originalName)
-        etEmail.setText(originalEmail)
-        etPhone.setText(originalPhone)
-        
-        updateAvatarInitials(originalName)
+            withContext(Dispatchers.Main) {
+                originalName = user?.fullName ?: AppPreferences.getUserName(this@PersonalInfoActivity)
+                originalEmail = user?.email ?: email
+                originalPhone = user?.phone ?: AppPreferences.getUserPhone(this@PersonalInfoActivity)
+
+                etFullName.setText(originalName)
+                etEmail.setText(originalEmail)
+                etPhone.setText(originalPhone)
+
+                updateAvatarInitials(originalName)
+            }
+        }
     }
-    
+
     private fun updateAvatarInitials(name: String) {
         val words = name.trim().split("\\s+".toRegex())
         var initials = ""
@@ -101,12 +110,10 @@ class PersonalInfoActivity : AppCompatActivity() {
         etPhone.addTextChangedListener(textWatcher)
 
         findViewById<CardView>(R.id.cardAvatar).setOnClickListener {
-            // Pick image
             pickMedia.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         findViewById<TextView>(R.id.tvChangeAvatar).setOnClickListener {
-            // Pick image
             pickMedia.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
@@ -125,24 +132,33 @@ class PersonalInfoActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            AppPreferences.setUserName(this, newName)
-            AppPreferences.setUserEmail(this, newEmail)
-            AppPreferences.setUserPhone(this, newPhone)
-            
-            originalName = newName
-            originalEmail = newEmail
-            originalPhone = newPhone
-            
-            updateAvatarInitials(newName)
+            val userId = AppPreferences.getCurrentUserId(this)
+            lifecycleScope.launch(Dispatchers.IO) {
+                val db = AppDatabase.getInstance(this@PersonalInfoActivity)
+                val user = db.userDao().findByEmail(originalEmail)
+                if (user != null) {
+                    db.userDao().updateInfo(user.id, newName, newPhone, null)
+                }
 
-            Toast.makeText(this, "Đã lưu thay đổi", Toast.LENGTH_SHORT).show()
-            disableSaveButton()
-            setResult(RESULT_OK)
+                withContext(Dispatchers.Main) {
+                    AppPreferences.setUserName(this@PersonalInfoActivity, newName)
+                    AppPreferences.setUserEmail(this@PersonalInfoActivity, newEmail)
+                    AppPreferences.setUserPhone(this@PersonalInfoActivity, newPhone)
+
+                    originalName = newName
+                    originalEmail = newEmail
+                    originalPhone = newPhone
+
+                    updateAvatarInitials(newName)
+
+                    Toast.makeText(this@PersonalInfoActivity, "Đã lưu thay đổi vào CSDL", Toast.LENGTH_SHORT).show()
+                    disableSaveButton()
+                    setResult(RESULT_OK)
+                }
+            }
         }
 
         findViewById<CardView>(R.id.cardBodyProfile).setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_weight_input, null) // Reuse or create simpler one
-            // We just show a simple toast or minimal alert for now
             val items = arrayOf("Giảm cân", "Giữ cân", "Tăng cân")
             AlertDialog.Builder(this)
                 .setTitle("Mục tiêu cơ thể")

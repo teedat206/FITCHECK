@@ -2,25 +2,23 @@ package com.example.fitcheck.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.fitcheck.R
-import com.example.fitcheck.data.AppDatabase
-import com.example.fitcheck.data.UserRecord
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.fitcheck.data.repository.AuthResult
+import com.example.fitcheck.viewmodel.AuthViewModel
 
 class RegisterActivity : AppCompatActivity() {
+
+    private val authViewModel: AuthViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,13 +29,8 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
-        findViewById<View>(R.id.btnBack)?.setOnClickListener {
-            finish()
-        }
-
-        findViewById<View>(R.id.tvLoginPrompt)?.setOnClickListener {
-            finish()
-        }
+        findViewById<View>(R.id.btnBack)?.setOnClickListener { finish() }
+        findViewById<View>(R.id.tvLoginPrompt)?.setOnClickListener { finish() }
 
         val etName = findViewById<EditText>(R.id.etName)
         val etEmail = findViewById<EditText>(R.id.etEmailReg)
@@ -45,26 +38,36 @@ class RegisterActivity : AppCompatActivity() {
         val etConfirm = findViewById<EditText>(R.id.etConfirmPass)
         val cbTerms = findViewById<CheckBox>(R.id.cbTerms)
 
+        authViewModel.authResult.observe(this) { result ->
+            when (result) {
+                is AuthResult.Success -> {
+                    AppPreferences.setCurrentUserId(this, result.userId)
+                    AppPreferences.setLoggedIn(this, true)
+                    AppPreferences.setHasCompletedProfile(this, false)
+                    AppPreferences.setUserName(this, etName.text.toString().trim())
+                    AppPreferences.setUserEmail(this, etEmail.text.toString().trim().lowercase())
+
+                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+                    authViewModel.clearResult()
+
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                is AuthResult.Error -> {
+                    Toast.makeText(this, result.message, Toast.LENGTH_SHORT).show()
+                    authViewModel.clearResult()
+                }
+                null -> {}
+            }
+        }
+
         findViewById<View>(R.id.btnRegister)?.setOnClickListener {
-            val name = etName.text.toString().trim()
-            val email = etEmail.text.toString().trim()
-            val pass = etPassword.text.toString().trim()
-            val confirm = etConfirm.text.toString().trim()
-
-            if (name.isEmpty() || email.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Email không hợp lệ", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (pass.length < 6) {
-                Toast.makeText(this, "Mật khẩu phải từ 6 ký tự", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val name = etName.text.toString()
+            val email = etEmail.text.toString()
+            val pass = etPassword.text.toString()
+            val confirm = etConfirm.text.toString()
 
             if (pass != confirm) {
                 Toast.makeText(this, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
@@ -76,41 +79,7 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                val db = AppDatabase.getDatabase(this@RegisterActivity)
-                val existing = db.userDao().getUserByEmail(email)
-
-                if (existing != null) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@RegisterActivity, "Tài khoản (email) đã tồn tại", Toast.LENGTH_SHORT).show()
-                    }
-                    return@launch
-                }
-
-                // Save new user to Room
-                val newUser = UserRecord(
-                    fullName = name,
-                    email = email,
-                    password = pass,
-                    hasCompletedProfile = false
-                )
-                db.userDao().insert(newUser)
-
-                withContext(Dispatchers.Main) {
-                    // Set session in SharedPreferences
-                    AppPreferences.setLoggedIn(this@RegisterActivity, true)
-                    AppPreferences.setUserName(this@RegisterActivity, name)
-                    AppPreferences.setUserEmail(this@RegisterActivity, email)
-                    AppPreferences.setHasCompletedProfile(this@RegisterActivity, false)
-
-                    Toast.makeText(this@RegisterActivity, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-
-                    val intent = Intent(this@RegisterActivity, ProfileActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
-                }
-            }
+            authViewModel.register(name, email, pass)
         }
     }
 }

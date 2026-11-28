@@ -34,7 +34,6 @@ class WeightHistoryActivity : AppCompatActivity() {
         val tvLatestWeight = findViewById<TextView>(R.id.tvLatestWeight)
         val tvRecordCount = findViewById<TextView>(R.id.tvRecordCount)
 
-        // 1. Khởi tạo Adapter kèm sự kiện Sửa và Xóa
         val adapter = WeightAdapter(
             onEditClick = { record ->
                 showWeightDialog(record)
@@ -48,7 +47,16 @@ class WeightHistoryActivity : AppCompatActivity() {
         rvWeightList.layoutManager = LinearLayoutManager(this)
         rvWeightList.adapter = adapter
 
-        // 2. Lắng nghe dữ liệu realtime từ Room Database qua ViewModel
+        viewModel.insertStatus.observe(this) { result ->
+            if (result == null) return@observe
+            result.onSuccess { msg ->
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+            }.onFailure { err ->
+                Toast.makeText(this, err.message ?: "Lỗi khi lưu cân nặng", Toast.LENGTH_SHORT).show()
+            }
+            viewModel.clearStatus()
+        }
+
         viewModel.allWeights.observe(this) { list ->
             if (list.isEmpty()) {
                 findViewById<android.view.View>(R.id.groupData).visibility = android.view.View.GONE
@@ -59,7 +67,6 @@ class WeightHistoryActivity : AppCompatActivity() {
                 
                 adapter.submitList(list)
                 
-                // Cập nhật Cân nặng gần nhất
                 val latest = list.firstOrNull()
                 if (latest != null) {
                     tvLatestWeight.text = latest.weight.toString()
@@ -67,10 +74,8 @@ class WeightHistoryActivity : AppCompatActivity() {
                     tvLatestWeight.text = "--.-"
                 }
                 
-                // Cập nhật số lượng bản ghi
                 tvRecordCount.text = "${list.size} bản ghi"
                 
-                // Cập nhật tiêu đề tháng động
                 val months = list.mapNotNull {
                     try {
                         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(it.date)?.let { d ->
@@ -98,7 +103,6 @@ class WeightHistoryActivity : AppCompatActivity() {
             }
         }
 
-        // 3. Nút thêm cân nặng
         btnAddWeight.setOnClickListener {
             showWeightDialog(null)
         }
@@ -114,7 +118,6 @@ class WeightHistoryActivity : AppCompatActivity() {
             overridePendingTransition(0, 0)
         }
 
-        // Nút Lịch chọn ngày
         val calendarClick = android.view.View.OnClickListener {
             val c = Calendar.getInstance()
             android.app.DatePickerDialog(this, { _, year, month, dayOfMonth ->
@@ -169,22 +172,24 @@ class WeightHistoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            var weightValue = inputStr.toFloatOrNull()
+            var weightValue = inputStr.replace(",", ".").toFloatOrNull()
             if (weightValue == null) {
                 Toast.makeText(this, "Cân nặng không hợp lệ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Quy đổi nếu chọn lbs
             if (rbLbs.isChecked) {
                 weightValue = weightValue / 2.20462f
             }
 
-            // Làm tròn 1 chữ số thập phân
             weightValue = (weightValue * 10).roundToInt() / 10f
 
+            if (weightValue < 20f || weightValue > 300f) {
+                Toast.makeText(this, "Cân nặng phải trong khoảng 20kg - 300kg", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (recordToEdit == null) {
-                // Thêm mới
                 val cal = Calendar.getInstance()
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -200,15 +205,8 @@ class WeightHistoryActivity : AppCompatActivity() {
                 }
                 val sessionStr = "$timeStr • $sessionLabel"
 
-                val newRecord = WeightRecord(
-                    weight = weightValue,
-                    date = dateStr,
-                    session = sessionStr
-                )
-                viewModel.insert(newRecord)
-                Toast.makeText(this, "Đã thêm cân nặng thành công!", Toast.LENGTH_SHORT).show()
+                viewModel.insert(weightValue, dateStr, sessionStr)
             } else {
-                // Cập nhật
                 val updatedRecord = recordToEdit.copy(weight = weightValue)
                 viewModel.update(updatedRecord)
                 Toast.makeText(this, "Đã cập nhật thành công!", Toast.LENGTH_SHORT).show()

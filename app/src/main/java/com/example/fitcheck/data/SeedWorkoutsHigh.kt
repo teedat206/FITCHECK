@@ -1,0 +1,34 @@
+package com.example.fitcheck.data
+
+import com.example.fitcheck.data.entity.WorkoutEntity
+
+object SeedWorkoutsHigh {
+    fun getWorkouts(): List<WorkoutEntity> {
+        val intensity = SeedData.INTENSITY_HIGH
+        return listOf(
+            // ---- Không dụng cụ (10 bài) ----
+            WorkoutEntity(name = "Cardio tiêu hao mỡ toàn thân", intensity = intensity, durationMinutes = 30, hasEquipment = false, caloriesBurned = 320, description = "Bài tập cường độ cao. Lưu ý an toàn: Dừng lại nếu thấy chóng mặt hoặc kiệt sức.", steps = "1. Khởi động 5 phút\n2. Burpees & Jumping Jacks 20 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Plank & Sức mạnh cơ lõi", intensity = intensity, durationMinutes = 15, hasEquipment = false, caloriesBurned = 230, description = "Tăng cường cơ bụng 6 múi và cột sống. Lưu ý an toàn: Dừng lại nếu thấy đau thắt lưng.", steps = "1. Khởi động 3 phút\n2. Plank 60s x 4 hiệp 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "HIT cường độ cao bùng nổ", intensity = intensity, durationMinutes = 20, hasEquipment = false, caloriesBurned = 280, description = "Tăng tốc trao đổi chất. Lưu ý an toàn: Dừng lại nếu chóng mặt.", steps = "1. Khởi động 4 phút\n2. 40s tập 20s nghỉ x 12 hiệp 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Burpees liên hoàn đốt năng lượng", intensity = intensity, durationMinutes = 20, hasEquipment = false, caloriesBurned = 300, description = "Tập luyện sức bền bùng nổ. Lưu ý an toàn: Dừng lại nếu thấy chóng mặt.", steps = "1. Khởi động 4 phút\n2. Burpees 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Chạy nước rút nhịp độ cao", intensity = intensity, durationMinutes = 20, hasEquipment = false, caloriesBurned = 290, description = "Chạy tốc độ tối đa theo quãng ngắn. Lưu ý an toàn: Dừng lại nếu thấy đau cơ gân.", steps = "1. Khởi động 5 phút\n2. Chạy nước rút 10 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Chống đẩy bùng nổ (Plyometric Push-ups)", intensity = intensity, durationMinutes = 15, hasEquipment = false, caloriesBurned = 220, description = "Phát triển sức mạnh cơ ngực tối đa. Lưu ý an toàn: Dừng lại nếu đau cổ tay.", steps = "1. Khởi động cổ tay 3 phút\n2. Chống đẩy bật tay 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "Jump Squat bật nhảy cao", intensity = intensity, durationMinutes = 20, hasEquipment = false, caloriesBurned = 270, description = "Bật nhảy phát triển sức mạnh đùi mông. Lưu ý an toàn: Dừng lại nếu đau khớp gối.", steps = "1. Khởi động gối 4 phút\n2. Bật nhảy squat 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Mountain Climbers leo núi siêu tốc", intensity = intensity, durationMinutes = 15, hasEquipment = false, caloriesBurned = 225, description = "Siết cơ bụng và đốt calo nhanh. Lưu ý an toàn: Dừng lại nếu chóng mặt.", steps = "1. Khởi động 3 phút\n2. Leo núi tại chỗ 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "High Knees nâng cao đùi tốc độ", intensity = intensity, durationMinutes = 15, hasEquipment = false, caloriesBurned = 230, description = "Tăng nhịp tim bùng nổ. Lưu ý an toàn: Dừng lại nếu mệt dốc.", steps = "1. Khởi động 3 phút\n2. Nâng cao đùi siêu tốc 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "Tập cơ bụng Tabata 4 phút bùng nổ", intensity = intensity, durationMinutes = 20, hasEquipment = false, caloriesBurned = 250, description = "Tabata cơ bụng săn chắc. Lưu ý an toàn: Dừng lại nếu đau thắt lưng.", steps = "1. Khởi động 4 phút\n2. Tabata bụng 12 phút\n3. Thả lỏng 4 phút"),
+
+            // ---- Có dụng cụ (10 bài) ----
+            WorkoutEntity(name = "Nhảy dây gia tăng thể lực", intensity = intensity, durationMinutes = 15, hasEquipment = true, caloriesBurned = 225, description = "Tăng nhịp tim bùng nổ. Lưu ý an toàn: Dừng lại nếu chóng mặt.", steps = "1. Khởi động cổ chân 3 phút\n2. Nhảy dây tốc độ 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "Tập xà đơn tăng cơ lưng", intensity = intensity, durationMinutes = 20, hasEquipment = true, caloriesBurned = 260, description = "Kéo xà phát triển cơ xô và lưng. Lưu ý an toàn: Dừng lại nếu đau vai.", steps = "1. Khởi động vai 4 phút\n2. Kéo xà đơn 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Nâng tạ gánh đùi (Barbell Squat)", intensity = intensity, durationMinutes = 30, hasEquipment = true, caloriesBurned = 350, description = "Sức mạnh cơ đùi mông tối đa. Lưu ý an toàn: Dừng lại nếu đau cột sống.", steps = "1. Khởi động 5 phút\n2. Gánh tạ 20 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Đập dây thừng thể lực (Battle Ropes)", intensity = intensity, durationMinutes = 15, hasEquipment = true, caloriesBurned = 240, description = "Vận động tay vai cường độ bùng nổ. Lưu ý an toàn: Dừng lại nếu chóng mặt.", steps = "1. Khởi động 3 phút\n2. Đập dây thừng 9 phút\n3. Thả lỏng 3 phút"),
+            WorkoutEntity(name = "Đẩy tạ đĩa nằm (Bench Press)", intensity = intensity, durationMinutes = 25, hasEquipment = true, caloriesBurned = 310, description = "Tập ngực nặng với tạ đòn. Lưu ý an toàn: Dừng lại nếu đau khớp vai.", steps = "1. Khởi động vai 5 phút\n2. Nằm đẩy tạ đòn 15 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Kéo tạ lưng (Deadlift)", intensity = intensity, durationMinutes = 30, hasEquipment = true, caloriesBurned = 360, description = "Bài tập sức mạnh toàn thân kinh điển. Lưu ý an toàn: Dừng lại nếu đau thắt lưng.", steps = "1. Khởi động lưng 5 phút\n2. Deadlift chuẩn phom 20 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Quật tạ ấm (Kettlebell Snatch)", intensity = intensity, durationMinutes = 20, hasEquipment = true, caloriesBurned = 270, description = "Tốc độ và sức mạnh toàn thân. Lưu ý an toàn: Dừng lại nếu mỏi cổ tay.", steps = "1. Khởi động 4 phút\n2. Quật tạ ấm 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Chạy máy dốc cường độ cao", intensity = intensity, durationMinutes = 25, hasEquipment = true, caloriesBurned = 330, description = "Chạy dốc đốt calo tối đa. Lưu ý an toàn: Dừng lại nếu chóng mặt.", steps = "1. Khởi động 5 phút\n2. Chạy máy nâng dốc 15 phút\n3. Thả lỏng 5 phút"),
+            WorkoutEntity(name = "Đẩy xe tạ thể lực (Sled Push)", intensity = intensity, durationMinutes = 20, hasEquipment = true, caloriesBurned = 290, description = "Tăng sức bộc phát cơ chân. Lưu ý an toàn: Dừng lại nếu thở dốc kiệt sức.", steps = "1. Khởi động 4 phút\n2. Đẩy xe tạ 12 phút\n3. Thả lỏng 4 phút"),
+            WorkoutEntity(name = "Đánh xà đơn đu người quay (Muscle-ups)", intensity = intensity, durationMinutes = 20, hasEquipment = true, caloriesBurned = 285, description = "Kỹ thuật kéo xà nâng cao. Lưu ý an toàn: Dừng lại nếu đau khuỷu tay.", steps = "1. Khởi động 4 phút\n2. Muscle-ups 12 phút\n3. Thả lỏng 4 phút")
+        )
+    }
+}

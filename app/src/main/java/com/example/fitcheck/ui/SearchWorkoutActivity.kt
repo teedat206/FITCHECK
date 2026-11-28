@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -12,36 +14,24 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fitcheck.R
+import com.example.fitcheck.data.entity.WorkoutEntity
+import com.example.fitcheck.viewmodel.WorkoutFilter
+import com.example.fitcheck.viewmodel.WorkoutViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import java.text.Normalizer
-import java.util.Locale
-import java.util.regex.Pattern
-
-data class WorkoutItem(
-    val name: String,
-    val durationMinutes: Int,
-    val intensity: String, // "Vừa", "Nhẹ", "Cao"
-    val equipment: String  // "Không dụng cụ", "Có dụng cụ"
-)
 
 class SearchWorkoutActivity : AppCompatActivity() {
 
-    private val allWorkouts = listOf(
-        WorkoutItem("Giãn cơ tại bàn học", 5, "Nhẹ", "Không dụng cụ"),
-        WorkoutItem("Giãn cơ toàn thân", 10, "Nhẹ", "Không dụng cụ"),
-        WorkoutItem("Chạy bộ tại chỗ", 15, "Vừa", "Không dụng cụ"),
-        WorkoutItem("Nhảy dây gia tăng thể lực", 20, "Cao", "Có dụng cụ"),
-        WorkoutItem("Tập tạ tay săn chắc vai", 25, "Vừa", "Có dụng cụ"),
-        WorkoutItem("Cardio đốt mỡ nhanh", 30, "Cao", "Không dụng cụ"),
-        WorkoutItem("Plank & Cơ bụng 6 múi", 15, "Vừa", "Không dụng cụ"),
-        WorkoutItem("Squat & Đùi thon gọn", 20, "Vừa", "Không dụng cụ"),
-        WorkoutItem("Yoga thư giãn buổi tối", 30, "Nhẹ", "Có dụng cụ")
-    )
+    private val workoutViewModel: WorkoutViewModel by viewModels()
+
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +57,46 @@ class SearchWorkoutActivity : AppCompatActivity() {
 
         val chipGroups = listOfNotNull(chipGroupIntensity, chipGroupDuration, chipGroupEquipment)
 
+        fun applyFilters() {
+            val query = etSearchQuery?.text.toString().trim()
+
+            val selectedIntensityId = chipGroupIntensity?.checkedChipId ?: View.NO_ID
+            val selectedIntensity = if (selectedIntensityId != View.NO_ID) {
+                findViewById<Chip>(selectedIntensityId)?.text?.toString() ?: ""
+            } else ""
+
+            val selectedDurationId = chipGroupDuration?.checkedChipId ?: View.NO_ID
+            val selectedDurationText = if (selectedDurationId != View.NO_ID) {
+                findViewById<Chip>(selectedDurationId)?.text?.toString()
+            } else null
+
+            val maxDuration = when {
+                selectedDurationText?.contains("15") == true -> 15
+                selectedDurationText?.contains("30") == true -> 30
+                else -> null
+            }
+
+            val selectedEquipmentId = chipGroupEquipment?.checkedChipId ?: View.NO_ID
+            val selectedEquipmentText = if (selectedEquipmentId != View.NO_ID) {
+                findViewById<Chip>(selectedEquipmentId)?.text?.toString()
+            } else null
+
+            val hasEquipment = when {
+                selectedEquipmentText?.contains("Có") == true -> true
+                selectedEquipmentText?.contains("Không") == true -> false
+                else -> null
+            }
+
+            workoutViewModel.setFilter(
+                WorkoutFilter(
+                    keyword = query,
+                    intensity = selectedIntensity,
+                    maxDuration = maxDuration,
+                    hasEquipment = hasEquipment
+                )
+            )
+        }
+
         fun syncChipGroupStyle(chipGroup: ChipGroup) {
             for (i in 0 until chipGroup.childCount) {
                 val chip = chipGroup.getChildAt(i) as? Chip ?: continue
@@ -88,55 +118,22 @@ class SearchWorkoutActivity : AppCompatActivity() {
             syncChipGroupStyle(group)
             group.setOnCheckedStateChangeListener { _, _ ->
                 syncChipGroupStyle(group)
+                applyFilters()
             }
         }
 
-        fun String.unaccent(): String {
-            val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
-            return Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(temp).replaceAll("")
-                .lowercase(Locale.getDefault())
-        }
-
-        fun applyFilters() {
-            val query = etSearchQuery?.text.toString().trim().unaccent()
-
-            val selectedIntensityId = chipGroupIntensity?.checkedChipId ?: View.NO_ID
-            val selectedIntensity = if (selectedIntensityId != View.NO_ID) {
-                findViewById<Chip>(selectedIntensityId)?.text?.toString()
-            } else null
-
-            val selectedDurationId = chipGroupDuration?.checkedChipId ?: View.NO_ID
-            val selectedDurationText = if (selectedDurationId != View.NO_ID) {
-                findViewById<Chip>(selectedDurationId)?.text?.toString()
-            } else null
-
-            val selectedEquipmentId = chipGroupEquipment?.checkedChipId ?: View.NO_ID
-            val selectedEquipment = if (selectedEquipmentId != View.NO_ID) {
-                findViewById<Chip>(selectedEquipmentId)?.text?.toString()
-            } else null
-
-            val filtered = allWorkouts.filter { workout ->
-                val matchesQuery = query.isEmpty() || workout.name.unaccent().contains(query)
-                val matchesIntensity = selectedIntensity == null || workout.intensity.equals(selectedIntensity, ignoreCase = true)
-                val matchesEquipment = selectedEquipment == null || workout.equipment.equals(selectedEquipment, ignoreCase = true)
-                val matchesDuration = when {
-                    selectedDurationText?.contains("15") == true -> workout.durationMinutes <= 15
-                    selectedDurationText?.contains("30") == true -> workout.durationMinutes <= 30
-                    else -> true
-                }
-                matchesQuery && matchesIntensity && matchesEquipment && matchesDuration
-            }
-
+        fun renderWorkouts(workouts: List<WorkoutEntity>) {
             layoutResultsContainer?.removeAllViews()
 
-            if (filtered.isEmpty()) {
+            if (workouts.isEmpty()) {
                 tvEmptyResult?.visibility = View.VISIBLE
+                tvEmptyResult?.text = "Không tìm thấy bài tập phù hợp"
                 tvResultCount?.text = "0 kết quả phù hợp"
             } else {
                 tvEmptyResult?.visibility = View.GONE
-                tvResultCount?.text = "${filtered.size} kết quả phù hợp"
+                tvResultCount?.text = "${workouts.size} kết quả phù hợp"
 
-                filtered.forEach { workout ->
+                workouts.forEach { workout ->
                     val card = MaterialCardView(this).apply {
                         radius = resources.displayMetrics.density * 16f
                         setCardBackgroundColor(Color.WHITE)
@@ -185,8 +182,9 @@ class SearchWorkoutActivity : AppCompatActivity() {
                             setTypeface(null, android.graphics.Typeface.BOLD)
                         }
 
+                        val equipStr = if (workout.hasEquipment) "Có dụng cụ" else "Không dụng cụ"
                         val tvSub = TextView(this@SearchWorkoutActivity).apply {
-                            text = "${workout.durationMinutes} phút · ${workout.intensity} · ${workout.equipment}"
+                            text = "${workout.durationMinutes} phút · ${workout.intensity} · $equipStr"
                             setTextColor(Color.parseColor("#6B7280"))
                             textSize = 13f
                         }
@@ -212,8 +210,12 @@ class SearchWorkoutActivity : AppCompatActivity() {
                         setOnClickListener {
                             AlertDialog.Builder(this@SearchWorkoutActivity)
                                 .setTitle(workout.name)
-                                .setMessage("Thời lượng: ${workout.durationMinutes} phút\nCường độ: ${workout.intensity}\nDụng cụ: ${workout.equipment}")
-                                .setPositiveButton("Đóng", null)
+                                .setMessage("Thời lượng: ${workout.durationMinutes} phút\nCường độ: ${workout.intensity}\nDụng cụ: $equipStr\nCalo tiêu hao: ${workout.caloriesBurned} kcal\nMô tả: ${workout.description}\nHướng dẫn: ${workout.steps}")
+                                .setPositiveButton(if (workout.isCompleted) "Bỏ hoàn thành" else "Đánh dấu hoàn thành") { _, _ ->
+                                    workoutViewModel.toggleCompleted(workout)
+                                    Toast.makeText(this@SearchWorkoutActivity, "Đã cập nhật trạng thái bài tập", Toast.LENGTH_SHORT).show()
+                                }
+                                .setNegativeButton("Đóng", null)
                                 .show()
                         }
                     }
@@ -222,11 +224,17 @@ class SearchWorkoutActivity : AppCompatActivity() {
             }
         }
 
+        workoutViewModel.workouts.observe(this) { list ->
+            renderWorkouts(list ?: emptyList())
+        }
+
         etSearchQuery?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 btnClearQuery?.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
-                applyFilters()
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                searchRunnable = Runnable { applyFilters() }
+                searchHandler.postDelayed(searchRunnable!!, 300)
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -249,7 +257,11 @@ class SearchWorkoutActivity : AppCompatActivity() {
             applyFilters()
         }
 
-        // Initial apply
         applyFilters()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchRunnable?.let { searchHandler.removeCallbacks(it) }
     }
 }
